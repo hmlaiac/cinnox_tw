@@ -45,7 +45,7 @@ public class LineMsgHandler {
         String lineId = source.getUserId();
         String replyToken = messageEvent.getReplyToken();
         String message = messageEvent.getMessage().getText();
-        LineMessage lineMessage = new LineMessage(replyToken, lineId, message);
+        LineMessage lineMessage = new LineMessage(lineId, message);
         lineMessageRepository.save(lineMessage);
 
         String displayName = "NONE";
@@ -84,7 +84,7 @@ public class LineMsgHandler {
             e.printStackTrace();
         }
 
-        LineUser lineUser = new LineUser(lineId, displayName, pictureUrl, language);
+        LineUser lineUser = new LineUser(lineId, displayName, pictureUrl, language, replyToken);
         lineUserRepository.save(lineUser);
     }
 }

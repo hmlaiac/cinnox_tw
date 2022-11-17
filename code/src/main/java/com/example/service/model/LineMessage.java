@@ -18,9 +18,7 @@ public class LineMessage {
     private String username;
     private Date date;
 
-    public LineMessage(@JsonProperty("replyToken") String replyToken,
-                       @JsonProperty("lineId") String lineId, @JsonProperty("message") String message) {
-        this.replyToken = replyToken;
+    public LineMessage(@JsonProperty("lineId") String lineId, @JsonProperty("message") String message) {
         this.lineId = lineId;
         this.message = message;
         this.date = new Date();

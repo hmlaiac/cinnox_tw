@@ -19,11 +19,13 @@ public class LineUser {
     private String displayName;
     private String pictureUrl;
     private String language;
+    private String token;
 
-    public LineUser(String userId, String displayName, String pictureUrl, String language) {
+    public LineUser(String userId, String displayName, String pictureUrl, String language, String token) {
         this.userId = userId;
         this.displayName = displayName;
         this.pictureUrl = pictureUrl;
         this.language = language;
+        this.token = token;
     }
 }
