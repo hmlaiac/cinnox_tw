@@ -24,7 +24,6 @@ public class TestController {
 
     @PostMapping("/testdata")
     public String testdata(@RequestBody TestObject testObject){
-        System.out.println(testObject.getMessage());
         testObjectRepo.save(testObject);
         return "SUCCESS!!!";
     }
