@@ -19,12 +19,10 @@ public class LineMessage {
     private Date date;
 
     public LineMessage(@JsonProperty("replyToken") String replyToken,
-                       @JsonProperty("lineId") String lineId, @JsonProperty("message") String message,
-                       @JsonProperty("username") String username) {
+                       @JsonProperty("lineId") String lineId, @JsonProperty("message") String message) {
         this.replyToken = replyToken;
         this.lineId = lineId;
         this.message = message;
-        this.username = username;
         this.date = new Date();
     }
 }

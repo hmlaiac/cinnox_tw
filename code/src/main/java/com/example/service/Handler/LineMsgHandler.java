@@ -1,18 +1,19 @@
 package com.example.service.Handler;
 
 import com.example.service.model.LineMessage;
-import com.example.service.repository.LineRepository;
+import com.example.service.model.LineUser;
+import com.example.service.repository.LineMessageRepository;
+import com.example.service.repository.LineUserRepository;
 import com.linecorp.bot.client.LineMessagingClient;
-import com.linecorp.bot.model.ReplyMessage;
-import com.linecorp.bot.model.event.Event;
 import com.linecorp.bot.model.event.MessageEvent;
 import com.linecorp.bot.model.event.message.TextMessageContent;
 import com.linecorp.bot.model.event.source.Source;
-import com.linecorp.bot.model.message.TextMessage;
+import com.linecorp.bot.model.profile.UserProfileResponse;
 import com.linecorp.bot.spring.boot.annotation.EventMapping;
 import com.linecorp.bot.spring.boot.annotation.LineMessageHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.sound.sampled.Line;
 import java.util.concurrent.ExecutionException;
 
 @LineMessageHandler
@@ -21,7 +22,11 @@ public class LineMsgHandler {
     LineMessagingClient lineMessagingClient;
 
     @Autowired
-    LineRepository lineRepository;
+    LineMessageRepository lineMessageRepository;
+
+    @Autowired
+    LineUserRepository lineUserRepository;
+
 //    @EventMapping
 //    public TextMessage handleTextMessageEvent(MessageEvent<TextMessageContent> event) {
 //        System.out.println("event: " + event);
@@ -34,35 +39,44 @@ public class LineMsgHandler {
          * REPLY_TOKEN: String replyToken   ---> This the unique key to identify the user
          * USER_ID: String lineId
          * MESSAGE: String message
-         * USER_NAME: displayName
          * Send message with lineMessagingClient
          */
+        Source source = messageEvent.getSource();
+        String lineId = source.getUserId();
+        String replyToken = messageEvent.getReplyToken();
+        String message = messageEvent.getMessage().getText();
+        LineMessage lineMessage = new LineMessage(replyToken, lineId, message);
+        lineMessageRepository.save(lineMessage);
 
+        String displayName = "NONE";
+        String language = "NONE";
+        String pictureUrl = "NONE";
 
         try {
-            Source source = messageEvent.getSource();
-            String lineId = source.getUserId();
-            String replyToken = messageEvent.getReplyToken();
-            String message = messageEvent.getMessage().getText();
-            String displayName = lineMessagingClient.getProfile(lineId).get().getDisplayName();
+            /**
+             * Profile Information
+             * USER_ID: String lineId --> Unique
+             * Language: String language
+             * Last_UPDATE_TIME: date
+             */
+            UserProfileResponse profile = lineMessagingClient.getProfile(lineId).get();
+            try {
+                displayName = profile.getDisplayName();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
-            LineMessage lineMessage = new LineMessage(replyToken, lineId, message, displayName);
-            lineRepository.save(lineMessage);
-//            Source source = messageEvent.getSource();
-//            String lineId = source.getUserId();
-//            String replyToken = messageEvent.getReplyToken();
-//            String message = messageEvent.getMessage().getText();
-//
-//            String displayName = lineMessagingClient
-//                    .getProfile(lineId).get().getDisplayName();
-//
-//            String answer = "Hello";
-//            TextMessage responseMessage = new TextMessage(answer);
-//
-//            lineMessagingClient.replyMessage(new ReplyMessage(replyToken, responseMessage));
+            try {
+                language = profile.getLanguage();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
-
-
+            try {
+                pictureUrl = profile.getPictureUrl().toString();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -70,5 +84,7 @@ public class LineMsgHandler {
             e.printStackTrace();
         }
 
+        LineUser lineUser = new LineUser(lineId, displayName, pictureUrl, language);
+        lineUserRepository.save(lineUser);
     }
 }
