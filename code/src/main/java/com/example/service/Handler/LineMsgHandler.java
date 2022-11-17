@@ -5,9 +5,11 @@ import com.example.service.model.LineUser;
 import com.example.service.repository.LineMessageRepository;
 import com.example.service.repository.LineUserRepository;
 import com.linecorp.bot.client.LineMessagingClient;
+import com.linecorp.bot.model.ReplyMessage;
 import com.linecorp.bot.model.event.MessageEvent;
 import com.linecorp.bot.model.event.message.TextMessageContent;
 import com.linecorp.bot.model.event.source.Source;
+import com.linecorp.bot.model.message.TextMessage;
 import com.linecorp.bot.model.profile.UserProfileResponse;
 import com.linecorp.bot.spring.boot.annotation.EventMapping;
 import com.linecorp.bot.spring.boot.annotation.LineMessageHandler;
@@ -27,12 +29,6 @@ public class LineMsgHandler {
     @Autowired
     LineUserRepository lineUserRepository;
 
-//    @EventMapping
-//    public TextMessage handleTextMessageEvent(MessageEvent<TextMessageContent> event) {
-//        System.out.println("event: " + event);
-//        return new TextMessage(event.getMessage().getText());
-//    }
-
     @EventMapping
     public void handleDefaultMessageEvent(MessageEvent<TextMessageContent> messageEvent) {
         /**
@@ -51,6 +47,16 @@ public class LineMsgHandler {
         String displayName = "NONE";
         String language = "NONE";
         String pictureUrl = "NONE";
+
+        /**
+         * Test the boot with "hello bot"
+         */
+        if( message.equalsIgnoreCase("hello bot") ){
+            String greet = "Hello everyone. I am the bot created by Thomas Lai\n Nice to meet you!";
+            TextMessage responseMessage = new TextMessage(greet);
+            lineMessagingClient.replyMessage(new ReplyMessage(replyToken, responseMessage));
+            return;
+        }
 
         try {
             /**
